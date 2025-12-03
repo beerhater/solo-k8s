@@ -1,0 +1,31 @@
+name: build, push to docker hub
+
+on:
+  push:
+    branches: [ "main" ] 
+
+jobs:
+  build_and_push: 
+    runs-on: ubuntu-latest 
+    
+    steps:
+      - name: качаем код репы
+        uses: actions/checkout@v4 
+
+      - name: логиним докер хаб
+        uses: docker/login-action@v3
+        with: 
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: docker buildx 
+        uses: docker/setup-buildx-action@v3
+
+      - name: build push 
+        uses: docker/build-push-action@v5 
+        with: 
+          context: . 
+          push: true 
+          tags: | 
+            beeruser/solo:latest
+            beeruser/solo:${{ github.sha }} 
