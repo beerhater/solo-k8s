@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: solo-k8s-app
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: 'https://github.com/beerhater/solo-k8s.git'
+    targetRevision: HEAD
+    path: 'my-solo-chart'  
+    
+    helm:
+      valueFiles:
+      - values.yaml
+      - values-beta.yaml
+
+  destination: 
+    server: 'https://kubernetes.default.svc'
+    namespace: 'default'
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true

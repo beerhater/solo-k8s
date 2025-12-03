@@ -22,7 +22,7 @@ redis:
 
 resources:
   requests:
-    memory: "128Mi"
+    memory: "130Mi"
     cpu: "100m"
   limits:
     memory: "256Mi"
