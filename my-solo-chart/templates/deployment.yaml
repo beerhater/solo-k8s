@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: {{ .Values.replicaCount| default 1 }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-app
+    spec:
+      containers:
+      - name: solo-k8s-container
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        env: 
+        - name: GREETING
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: GREETING
+        - name: REDIS_HOST
+          value: {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-db
+        - name: REDIS_PORT
+          value: "{{ .Values.redis.port | default 6379 }}"
+        livenessProbe:
+          httpGet: 
+            path: /health
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          httpGet: 
+            path: /ready
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 5  
+          periodSeconds: 5
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        resources: 
+          {{- toYaml .Values.resources | nindent 10 }}

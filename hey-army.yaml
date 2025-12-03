@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hey-army
+spec:
+  replicas: 5  
+  selector:
+    matchLabels:
+      app: hey-army
+  template:
+    metadata:
+      labels:
+        app: hey-army
+    spec:
+      containers:
+      - name: hey
+        image: williamyeh/hey
+       
+        args: ["-z", "10m", "-c", "5", "-q", "25", "http://solo-release-service.default.svc.cluster.local"]
+
+#если не работает, то нужно подождать ибо докерхаб может залокать айпи за частые запросы

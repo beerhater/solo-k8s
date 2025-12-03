@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-config
+data:
+  GREETING: {{ .Values.env.GREETING | quote }}
+  

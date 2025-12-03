@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-redis
+spec:
+  serviceName: {{ .Release.Name }}-redis-db
+  replicas: {{ .Values.redis.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-redis
+    spec:
+      containers:
+  
+        - name: redis
+          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+          ports:
+            - containerPort: {{ .Values.redis.port }}
+              name: redis
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              # Твой скрипт Master/Replica (оставляем как есть, но это временно - потом Sentinel сам будет рулить)
+              case "$HOSTNAME" in
+               *-0)
+                echo "I am MASTER"
+                docker-entrypoint.sh redis-server
+                ;;
+               *)
+                echo "I am REPLICA"
+                docker-entrypoint.sh redis-server --replicaof {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-db {{ .Values.redis.port }}
+                ;;
+              esac
+        
+       
+        - name: redis-sentinel
+          image: redis:7.0-alpine
+          command: 
+          - "sh"
+          - "-c"
+          - |
+            mkdir -p /data/sentinel 
+            cp /etc/sentinel-ro/sentinel.conf /data/sentinel/sentinel.conf
+            redis-sentinel /data/sentinel/sentinel.conf
+          ports:
+            - containerPort: 26379
+              name: sentinel
+          volumeMounts:
+            - name: sentinel-config
+              mountPath: /etc/sentinel-ro
+            - name: sentinel-data
+              mountPath: /data/sentinel
+            
+
+
+      volumes:
+        - name: sentinel-config
+          configMap:
+            name: {{ .Release.Name }}-redis-sentinel-config
+        - name: sentinel-data
+          emptyDir: {}
+
+  
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

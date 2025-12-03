@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solo-k8s-deployment
+spec:
+  replicas: {{ .Values.spec.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: solo-k8s
+  template:
+    metadata:
+      labels:
+        app: solo-k8s
+    spec:
+      containers:
+      - name: solo-k8s-container
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+        env: 
+        - name: GREETING
+          valueFrom:
+            configMapKeyRef:
+              name: my-config
+              key: GREETING
+        livenessProbe:
+          httpGet: 
+            path: /health
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          httpGet: 
+            path: /ready
+            port: {{ .Values.service.port }}
+          initialDelaySeconds: 5  
+          periodSeconds: 5
+        ports:
+        - containerPort: {{ .Values.service.port }}
