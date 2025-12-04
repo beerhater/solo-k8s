@@ -2,30 +2,47 @@ name: build, push to docker hub
 
 on:
   push:
-    branches: [ "main" ] 
+    branches: [ "main" ]
+
+    paths-ignore:
+      - 'my-solo-chart/values.yaml'
 
 jobs:
   build_and_push: 
-    runs-on: ubuntu-latest 
-    
-    steps:
-      - name: качаем код репы
-        uses: actions/checkout@v4 
+  runs-on: ubuntu-latest 
 
-      - name: логиним докер хаб
-        uses: docker/login-action@v3
-        with: 
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  steps:
+    - name: качаем код репы
+      uses: actions/checkout@v4
+      with: 
+      token: ${{ secrets.GH_PAT}}
 
-      - name: docker buildx 
-        uses: docker/setup-buildx-action@v3
+    - name: логиним докер хаб
+      uses: docker/login-action@v3
+      with: 
+      username: ${{ secrets.DOCKER_USERNAME }}
+      password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: build push 
-        uses: docker/build-push-action@v5 
-        with: 
-          context: . 
-          push: true 
-          tags: | 
-            beeruser/solo:latest
-            beeruser/solo:${{ github.sha }} 
+    - name: docker buildx 
+      uses: docker/setup-buildx-action@v3
+
+    - name: build push 
+      uses: docker/build-push-action@v5 
+      with: 
+      context: . 
+      push: true 
+      tags: | 
+        beeruser/solo:latest
+        beeruser/solo:${{ github.sha }} 
+
+    - name: обновление helm переменных 
+      run: | 
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "github-actions"
+
+      sed -i "s|tag: .*|tag: ${{ github.sha }}|" my-solo-chart/values.yaml
+      grep "tag:" my-solo-chart/values.yaml
+
+      git add my-solo-chart/values.yaml
+      git commit -m "обновлен имадж на ${{ github.sha }}"
+      git push
