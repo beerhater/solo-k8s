@@ -1,6 +1,6 @@
 image:
   repository: beeruser/solo
-  tag: latest
+  tag: debug-v1
   pullPolicy: Always  
 
 replicaCount: 3
