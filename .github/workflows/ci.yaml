@@ -44,6 +44,5 @@ jobs:
             grep "tag:" my-solo-chart/values.yaml
 
             git add my-solo-chart/values.yaml
-            git commit -m "обновлен имадж на $IMAGE_TAG"
+            git commit -m "обновлен имадж на $IMAGE_TAG" || echo "нечего комитеть"
             git push
-
