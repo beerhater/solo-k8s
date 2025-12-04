@@ -48,3 +48,4 @@ jobs:
         git add my-solo-chart/values.yaml
         git commit -m "обновлен имадж на ${{ github.sha }}"
         git push
+
