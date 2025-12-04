@@ -40,7 +40,7 @@ jobs:
             git config --global user.name "github-actions"
 
             IMAGE_TAG=${{ github.sha }}
-            sed -i "s|tag:.*|tag: $IMAGE_TAG|" my-solo-chart/values.yaml
+            sed -i "s|tag:.* #UPDATE_THIS_TAG |tag: $IMAGE_TAG #UPDATE_THIS_TAG|" my-solo-chart/values.yaml
             grep "tag:" my-solo-chart/values.yaml
 
             git add my-solo-chart/values.yaml

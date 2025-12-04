@@ -1,6 +1,7 @@
 image:
   repository: beeruser/solo
   tag: 9d34de412c3197a17ce51aa7de6f9041d71dcccd
+  tag: latest #UPDATE_THIS_TAG
   pullPolicy: Always  
 
 replicaCount: 3
@@ -18,6 +19,7 @@ redis:
   image:
     repository: redis
     tag: 9d34de412c3197a17ce51aa7de6f9041d71dcccd
+    tag: 7.0-alpine
   port: 6379
 
 resources:
