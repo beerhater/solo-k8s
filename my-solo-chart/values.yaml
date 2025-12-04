@@ -1,6 +1,6 @@
 image:
   repository: beeruser/solo
-  tag: e7728af36640537b8651bf424fe6780ce03a37d7
+  tag: 9d34de412c3197a17ce51aa7de6f9041d71dcccd
   pullPolicy: Always  
 
 replicaCount: 3
@@ -17,7 +17,7 @@ redis:
   replicaCount: 2
   image:
     repository: redis
-    tag: e7728af36640537b8651bf424fe6780ce03a37d7
+    tag: 9d34de412c3197a17ce51aa7de6f9041d71dcccd
   port: 6379
 
 resources:
