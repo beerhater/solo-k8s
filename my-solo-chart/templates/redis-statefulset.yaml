@@ -16,7 +16,7 @@ spec:
       containers:
   
         - name: redis
-          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+          image: redis:7.0-alpine
           ports:
             - containerPort: {{ .Values.redis.port }}
               name: redis
