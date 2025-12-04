@@ -40,8 +40,10 @@ jobs:
         git config --global user.email "github-actions@github.com"
         git config --global user.name "github-actions"
 
-      sed -i "s|tag: .*|tag: ${{ github.sha }}|" my-solo-chart/values.yaml
-      grep "tag:" my-solo-chart/values.yaml
+        IMAGE_TAG=${{ github.sha }}
+        sed -i "s|tag:.*|tag: $IMAGE_TAG|" my-solo-chart/values.yaml
+        grep "tag:" my-solo-chart/values.yaml
+
 
       git add my-solo-chart/values.yaml
       git commit -m "обновлен имадж на ${{ github.sha }}"
