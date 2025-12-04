@@ -1,6 +1,6 @@
 image:
   repository: beeruser/solo
-  tag: v4
+  tag: latest
   pullPolicy: Always  
 
 replicaCount: 3
