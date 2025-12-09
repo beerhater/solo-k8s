@@ -15,8 +15,12 @@ spec:
     spec:
       containers:
   
+        # --- Контейнер 1: REDIS ---
         - name: redis
           image: redis:7.0-alpine
+          # Вставляем ресурсы СЮДА (на уровне name)
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
           ports:
             - containerPort: {{ .Values.redis.port }}
               name: redis
@@ -27,21 +31,24 @@ spec:
           args:
             - |
               set -e
-              # Твой скрипт Master/Replica (оставляем как есть, но это временно - потом Sentinel сам будет рулить)
               case "$HOSTNAME" in
                *-0)
                 echo "I am MASTER"
-                docker-entrypoint.sh redis-server
+                docker-entrypoint.sh redis-server --appendonly yes --dir /data
                 ;;
                *)
                 echo "I am REPLICA"
-                docker-entrypoint.sh redis-server --replicaof {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-db {{ .Values.redis.port }}
+                docker-entrypoint.sh redis-server --replicaof {{ .Release.Name }}-redis-0.{{ .Release.Name }}-redis-db {{ .Values.redis.port }} --appendonly yes --dir /data
                 ;;
               esac
         
        
+        # --- Контейнер 2: SENTINEL ---
         - name: redis-sentinel
           image: redis:7.0-alpine
+          # И сюда тоже (используем те же ресурсы, что и для редиса)
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
           command: 
           - "sh"
           - "-c"
@@ -58,15 +65,12 @@ spec:
             - name: sentinel-data
               mountPath: /data/sentinel
             
-
-
       volumes:
         - name: sentinel-config
           configMap:
             name: {{ .Release.Name }}-redis-sentinel-config
         - name: sentinel-data
           emptyDir: {}
-
   
   volumeClaimTemplates:
     - metadata:
