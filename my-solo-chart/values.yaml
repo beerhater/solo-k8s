@@ -1,45 +1,49 @@
-image:
+image: 
   repository: beeruser/solo
-  tag: 9d34de412c3197a17ce51aa7de6f9041d71dcccd
-  tag: latest #UPDATE_THIS_TAG
-  pullPolicy: Always  
+  tag: "v3"
+  pullPolicy: Always
 
-replicaCount: 3
+replicaCount: 1 
 
-service:
-  port: 5000 
-ingress:
+ingress: 
+  enabled: true 
   host: solo-k8s.local
-  paths:
-    - path: /
-      pathType: Prefix
-      # servicePort: 5000 
-redis: 
-  replicaCount: 2
-  image:
-    repository: redis
-    tag: 9d34de412c3197a17ce51aa7de6f9041d71dcccd
-    tag: 7.0-alpine
-  port: 6379
+  annotations: {} 
+  paths: 
+    - path: / 
+      pathType: Prefix 
 
-resources:
-  requests:
-    memory: "130Mi"
-    cpu: "100m"
-  limits:
-    memory: "256Mi"
-    cpu: "500m"
+service: 
+  port: 5000
+  type: ClusterIP
 
 hpa: 
-  minReplicas: 2
+  enabled: true 
+  minReplicas: 1 
   maxReplicas: 10
-  targetCPUUtilizationPercentage: 50
-  targetMemoryUtilizationPercentage: 50
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80  
   scaleUpPercent: 100
   scaleUpPeriodSeconds: 60
-  scaleDownStabilizationWindowSeconds: 300
   scaleDownPercent: 100
   scaleDownPeriodSeconds: 60
+  scaleDownStabilizationWindowSeconds: 300
+  
 
+redis: 
+  enabled: true
+  port: 6379 
 
-GREETING: "Hello from ConfigMap"
+  image: 
+    repository: redis 
+    tag: "7.0-alpine"
+  replicaCount: 1
+  resources: 
+    requests: 
+      cpu: 10m 
+      memory: 32Mi
+    limits: 
+      cpu: 50m 
+      memory: 64Mi 
+
+GREETING: "Hello form default"

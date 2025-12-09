@@ -1,43 +1,10 @@
-image:
-  repository: beeruser/solo
-  tag: v3
-  pullPolicy: Always  
+replicaCount: 1 
 
-replicaCount: 3
-
-service:
-  port: 5000 
-ingress:
-  host: solobeta-k8s.local
-  paths:
-    - path: /
-      pathType: Prefix
-      # servicePort: 5000 
-redis: 
-  replicaCount: 2
-  image:
-    repository: redis
-    tag: 7.0-alpine
-  port: 6379
-
-resources:
-  requests:
-    memory: "128Mi"
-    cpu: "100m"
-  limits:
-    memory: "256Mi"
-    cpu: "500m"
-
-hpa: 
-  minReplicas: 2
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 50
-  targetMemoryUtilizationPercentage: 50
-  scaleUpPercent: 100
-  scaleUpPeriodSeconds: 60
-  scaleDownStabilizationWindowSeconds: 300
-  scaleDownPercent: 100
-  scaleDownPeriodSeconds: 60
+ingress: 
+  host: solo-k8s.local 
+  annotations: 
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-weight: "50"
 
 
-GREETING: "Hello from ConfigMap"
+GREETING: "Hello from beta canary"

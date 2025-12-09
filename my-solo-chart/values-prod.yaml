@@ -1,0 +1,20 @@
+replicaCount: 3 
+
+ingress: 
+  host: solo-k8s.local
+
+redis: 
+  replicaCount: 2
+  resources: 
+    requests:  
+      cpu: 50m 
+      memory: 64Mi
+    limits: 
+      cpu: 200m 
+      memory: 256Mi
+
+GREETING: "hello from prod"
+
+image: 
+  tag: latest #UPDATE_THIS_TAG
+
