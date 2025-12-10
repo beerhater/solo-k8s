@@ -4,6 +4,9 @@ metadata:
   name: {{ .Release.Name }}-redis-db
   labels: 
     app: {{ .Release.Name }}-redis
+  annotations: 
+    linkerd.io/inject: enabled 
+    config.linkerd.io/opaque-ports: "6379"
 spec: 
   ports: 
     - port: {{ .Values.redis.port }}

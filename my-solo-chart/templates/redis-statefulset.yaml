@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: {{ .Release.Name }}-redis
+      annotations: 
+        linkerd.io/inject: enabled
+        config.linkerd.io/skip-inbound-ports: "6379"
     spec:
       containers:
   
